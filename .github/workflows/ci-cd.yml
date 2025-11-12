@@ -200,7 +200,7 @@ jobs:
     name: Deploy to Nexus
     runs-on: ubuntu-latest
     needs: code-quality
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && secrets.NEXUS_USERNAME != '' && secrets.NEXUS_PASSWORD != ''
 
     steps:
     - name: Checkout code
