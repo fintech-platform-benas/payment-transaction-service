@@ -35,6 +35,13 @@ jobs:
         key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
         restore-keys: ${{ runner.os }}-m2
 
+    - name: Install Parent POM
+      run: |
+        # Clone parent POM and install it to local Maven repository
+        git clone --depth 1 https://github.com/fintech-platform-benas/payment-parent.git /tmp/payment-parent
+        cd /tmp/payment-parent
+        mvn clean install -DskipTests -B -V
+
     - name: Build with Maven
       run: mvn clean compile -B -V
 
@@ -85,6 +92,12 @@ jobs:
         key: ${{ runner.os }}-sonar
         restore-keys: ${{ runner.os }}-sonar
 
+    - name: Install Parent POM
+      run: |
+        git clone --depth 1 https://github.com/fintech-platform-benas/payment-parent.git /tmp/payment-parent
+        cd /tmp/payment-parent
+        mvn clean install -DskipTests -B -V
+
     - name: SonarCloud Scan
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -112,6 +125,12 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         cache: 'maven'
+
+    - name: Install Parent POM
+      run: |
+        git clone --depth 1 https://github.com/fintech-platform-benas/payment-parent.git /tmp/payment-parent
+        cd /tmp/payment-parent
+        mvn clean install -DskipTests -B -V
 
     - name: Package with Maven
       run: mvn package -DskipTests -B
@@ -185,6 +204,12 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         cache: 'maven'
+
+    - name: Install Parent POM
+      run: |
+        git clone --depth 1 https://github.com/fintech-platform-benas/payment-parent.git /tmp/payment-parent
+        cd /tmp/payment-parent
+        mvn clean install -DskipTests -B -V
 
     - name: Configure Maven settings
       uses: whelk-io/maven-settings-xml-action@v22
