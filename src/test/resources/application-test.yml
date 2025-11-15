@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: transaction-service-test
+  cloud:
+    config:
+      enabled: false  # Disable config server for tests
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+  h2:
+    console:
+      enabled: false
+
+server:
+  port: 0  # Random port for tests
+
+eureka:
+  client:
+    enabled: false  # Disable Eureka client for tests
+    register-with-eureka: false
+    fetch-registry: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
