@@ -196,11 +196,11 @@ jobs:
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
-  deploy-to-nexus:
-    name: Deploy to Nexus
+  deploy-to-github-packages:
+    name: Deploy to GitHub Packages
     runs-on: ubuntu-latest
     needs: code-quality
-    if: github.ref == 'refs/heads/main' && secrets.NEXUS_USERNAME != '' && secrets.NEXUS_PASSWORD != ''
+    if: github.ref == 'refs/heads/main'
 
     steps:
     - name: Checkout code
@@ -219,22 +219,24 @@ jobs:
         cd /tmp/payment-parent
         mvn clean install -DskipTests -B -V
 
-    - name: Configure Maven settings
-      uses: whelk-io/maven-settings-xml-action@v22
-      with:
-        servers: |
-          [
-            {
-              "id": "nexus-releases",
-              "username": "${{ secrets.NEXUS_USERNAME }}",
-              "password": "${{ secrets.NEXUS_PASSWORD }}"
-            },
-            {
-              "id": "nexus-snapshots",
-              "username": "${{ secrets.NEXUS_USERNAME }}",
-              "password": "${{ secrets.NEXUS_PASSWORD }}"
-            }
-          ]
+    - name: Create Maven settings.xml
+      run: |
+        mkdir -p ~/.m2
+        cat > ~/.m2/settings.xml <<EOF
+        <settings>
+          <servers>
+            <server>
+              <id>github</id>
+              <username>${GITHUB_ACTOR}</username>
+              <password>${GITHUB_TOKEN}</password>
+            </server>
+          </servers>
+        </settings>
+        EOF
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Deploy to Nexus
+    - name: Deploy to GitHub Packages
       run: mvn deploy -DskipTests -B
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
