@@ -1,8 +1,10 @@
 package com.paymentchain.businessdomain.transaction.controller;
 
 import com.paymentchain.businessdomain.transaction.entities.Transaction;
+import com.paymentchain.businessdomain.transaction.events.TransactionCreatedEvent;
 import com.paymentchain.businessdomain.transaction.mapper.TransactionMapper;
 import com.paymentchain.businessdomain.transaction.repository.TransactionRepository;
+import com.paymentchain.businessdomain.transaction.service.TransactionEventProducer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +20,9 @@ public class TransactionRestController {
 
    @Autowired
    TransactionMapper transactionMapper;
+
+   @Autowired
+   TransactionEventProducer eventProducer;
 
    @GetMapping("/all")
     private List<Transaction> transactionList(){
@@ -36,11 +41,27 @@ public class TransactionRestController {
    }
 
 
+   /**
+    * Creates a new transaction and publishes an event to Kafka.
+    *
+    * @param transactionInput Transaction data
+    * @return Created transaction
+    */
    @PostMapping
     public ResponseEntity<?> post(@RequestBody Transaction transactionInput){
 
-       transactionRepository.save(transactionInput);
-       return ResponseEntity.accepted().body(transactionInput);
+       // Save transaction to database
+       Transaction saved = transactionRepository.save(transactionInput);
+
+       // Publish event to Kafka
+       TransactionCreatedEvent event = TransactionCreatedEvent.of(
+               saved.getId(),
+               saved.getAccountIban(),
+               saved.getAmount()
+       );
+       eventProducer.publish(event);
+
+       return ResponseEntity.accepted().body(saved);
    }
 
    @PutMapping("/{id}")
