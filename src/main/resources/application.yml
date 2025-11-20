@@ -49,6 +49,13 @@ spring:
       linger-ms: 10
       buffer-memory: 33554432
 
+  # ==================== SPRING BATCH ====================
+  batch:
+    job:
+      enabled: false  # No auto-ejecutar al arrancar (solo manual)
+    jdbc:
+      initialize-schema: always  # Crea tablas batch metadata
+
 # ==================== SERVER ====================
 server:
   port: 8082
