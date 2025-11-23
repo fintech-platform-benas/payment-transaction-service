@@ -13,6 +13,9 @@ jobs:
   build-test-analyze:
     name: Build, Test & Quality Analysis
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
 
     steps:
     - name: Checkout code
@@ -26,6 +29,21 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         cache: 'maven'
+
+    - name: Configure Maven for GitHub Packages
+      run: |
+        mkdir -p ~/.m2
+        cat > ~/.m2/settings.xml <<EOF
+        <settings>
+          <servers>
+            <server>
+              <id>github-payment-common-libs</id>
+              <username>\${{ github.actor }}</username>
+              <password>\${{ secrets.GITHUB_TOKEN }}</password>
+            </server>
+          </servers>
+        </settings>
+        EOF
 
     - name: Cache Maven packages
       uses: actions/cache@v4
