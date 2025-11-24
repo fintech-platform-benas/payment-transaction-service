@@ -65,7 +65,7 @@ jobs:
         rm -rf ~/.m2/repository/com/paymentchain/payment-common
 
     - name: Build and Test
-      run: mvn clean verify -B
+      run: mvn clean verify -B -U
 
     - name: SonarCloud Analysis
       if: github.event_name == 'push'
