@@ -37,7 +37,7 @@ jobs:
         <settings>
           <servers>
             <server>
-              <id>github-payment-common-libs</id>
+              <id>github-fintech-platform</id>
               <username>\${{ github.actor }}</username>
               <password>\${{ secrets.GITHUB_TOKEN }}</password>
             </server>
