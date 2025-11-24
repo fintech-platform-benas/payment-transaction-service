@@ -59,6 +59,12 @@ jobs:
         key: ${{ runner.os }}-sonar
         restore-keys: ${{ runner.os }}-sonar
 
+    - name: Clear cached GitHub Packages metadata
+      run: |
+        rm -rf ~/.m2/repository/com/paymentchain/payment-domain
+        rm -rf ~/.m2/repository/com/paymentchain/payment-events
+        rm -rf ~/.m2/repository/com/paymentchain/payment-common
+
     - name: Build and Test
       run: mvn clean verify -B
 
